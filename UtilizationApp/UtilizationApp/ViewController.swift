@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation // import to use the codes in this framework to hanlde audio video
 
 
 /*
@@ -83,6 +84,7 @@ final class ViewController: UIViewController {
                 // Set the value to default and also stop the timer prevent loop infinity
                 number = 0
                 mainLabel.text = "Select the second here"
+                AudioServicesPlayAlertSound(SystemSoundID(1322)) // play alert sound when count down timer to zero
                 timer?.invalidate()
             }
         })
@@ -93,7 +95,8 @@ final class ViewController: UIViewController {
         // Khởi tạo lại giá trị
         mainLabel.text = "Select the second here"
         slider.value = 0.5
-        
+        number = Int(slider.value * 60)
+        timer?.invalidate() // as the same as timer = nil
         // set the center of the slider
     }
 }
