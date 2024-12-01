@@ -26,6 +26,7 @@ final class ViewController: UIViewController {
     // Để có thể thay đổi hoặc lấy giá trị của một thuộc tính thì phải khai báo outlet ở đây
     @IBOutlet weak var slider: UISlider!
     // Variable will be initiate time loop
+    // Why we need use weak here? -> Make a weak reference to Object will be init is Timer in HEAP and closure will capture strong self instance ViewController here
     weak var timer: Timer?
     // The count number using when timer will count
     var number: Int = 0
@@ -65,29 +66,33 @@ final class ViewController: UIViewController {
         //  - tính bằng công thức value * 60 -> lấy ra được giá trị
         // Output:
         //  - Hiển thị giá trị sau khi tính toán lên mainLabel
-        let seconds = Int(slider.value * 60)
-        debugPrint(seconds)
-        mainLabel.text = "\(seconds) seconds"
-        number = seconds
+        number = Int(slider.value * 60)
+        debugPrint(number)
+        mainLabel.text = "\(number) seconds"
     }
     
     // The code will be excute when user tapped the button, and this method will excute
     @IBAction func startButtonTapped(_ sender: UIButton) {
         // Thực thi vài thứ gì đó ở đây khi thời gian trôi qua 1s
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [self] _ in
-            if number > 0 {
-                number -= 1
-                slider.value = Float(number) / Float(60)
-                mainLabel.text = "\(number) seconds"
-            } else {
-                // Set the value to default and also stop the timer prevent loop infinity
-                number = 0
-                mainLabel.text = "Select the second here"
-                AudioServicesPlayAlertSound(SystemSoundID(1322)) // play alert sound when count down timer to zero
-                timer?.invalidate()
-            }
-        })
+//        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { [self] _ in
+//        
+//        })
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(timerDidFinish), userInfo: nil, repeats: true)
+    }
+    
+    @objc private func timerDidFinish() {
+        if number > 0 {
+            number -= 1
+            slider.value = Float(number) / Float(60)
+            mainLabel.text = "\(number) seconds"
+        } else {
+            // Set the value to default and also stop the timer prevent loop infinity
+            number = 0
+            mainLabel.text = "Select the second here"
+            AudioServicesPlayAlertSound(SystemSoundID(1322)) // play alert sound when count down timer to zero
+            timer?.invalidate()
+        }
     }
     
     
